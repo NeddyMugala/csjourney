@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potent Praise</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            color: white;
+            text-align: center;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+            background: black;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 15px;
+            background: #ff5722;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            background: #e64a19;
+        }
+        .content {
+            padding: 50px;
+        }
+        .voting {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .song-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .song {
+            background: #ffcc00;
+            color: black;
+            padding: 15px;
+            margin: 10px;
+            width: 80%;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .song button {
+            background: #ff5722;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .song button:hover {
+            background: #e64a19;
+        }
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>POTENT PRAISE</header>
+    <nav>
+        <a href="ppc.html">Music Home</a>
+        <a href="#news">News</a>
+        <a href="#videos">Videos</a>
+        <a href="#voting">Voting</a>
+        <a href="#contact">Contact Us</a>
+        <a href="#about">About Us</a>
+    </nav>
+    <div class="content">
+        <h1>Welcome to Potent Praise!</h1>
+        <p>Your #1 source for uplifting music, news, and more.</p>
+    </div>
+    
+    <div id="voting" class="content">
+        <h2>Vote for Your Favorite Zambian Gospel Song</h2>
+        <div class="song-list">
+            <div class="song">
+                <span><strong>Lesa Wilala</strong> - Pompi</span>
+                <button onclick="vote('lesa_wilala')">Vote</button>
+            </div>
+            <div class="song">
+                <span><strong>Mfumu Kale</strong> - Esther Chungu</span>
+                <button onclick="vote('mfumu_kale')">Vote</button>
+            </div>
+            <div class="song">
+                <span><strong>Amano</strong> - Abel Chungu</span>
+                <button onclick="vote('amano')">Vote</button>
+            </div>
+            <div class="song">
+                <span><strong>Kale</strong> - Mag44</span>
+                <button onclick="vote('kale')">Vote</button>
+            </div>
+        </div>
+        <p id="vote-result">Loading votes...</p>
+    </div>
+    
+    <footer>
+        &copy; 2025 Potent Praise. All rights reserved.
+    </footer>
+
+    <script>
+        let votes = JSON.parse(localStorage.getItem("votes")) || { lesa_wilala: 0, mfumu_kale: 0, amano: 0, kale: 0 };
+
+        function vote(song) {
+            votes[song]++;
+            localStorage.setItem("votes", JSON.stringify(votes));
+            updateVoteCount();
+        }
+
+        function updateVoteCount() {
+            document.getElementById("vote-result").innerText = `Lesa Wilala: ${votes.lesa_wilala} | Mfumu Kale: ${votes.mfumu_kale} | Amano: ${votes.amano} | Kale: ${votes.kale}`;
+        }
+
+        window.onload = updateVoteCount;
+    </script>
+</body>
+</html>
