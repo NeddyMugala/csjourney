@@ -1,99 +1,17 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Potent Praise</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(45deg, #ff8a00, #e52e71);
-            color: white;
-            text-align: center;
-        }
-        header {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding: 10px;
-            background: black;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 10px 15px;
-            background: #ff5722;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        nav a:hover {
-            background: #e64a19;
-        }
-        .content {
-            padding: 50px;
-        }
-        .voting {
-            background: white;
-            color: black;
-            padding: 20px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .song-list {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .song {
-            background: #ffcc00;
-            color: black;
-            padding: 15px;
-            margin: 10px;
-            width: 80%;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .song button {
-            background: #ff5722;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .song button:hover {
-            background: #e64a19;
-        }
-        footer {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            margin-top: 20px;
-        }
-    </style>
-</head>
+    <link rel="stylesheet" href= "styles.css">
+    </head>
 <body>
     <header>POTENT PRAISE</header>
     <nav>
         <a href="index.html">Music Home</a>
         <a href="#news">News</a>
         <a href="#videos">Videos</a>
-        <a href="#voting">Voting</a>
+        <a href="voting.html">Voting</a>
         <a href="#contact">Contact Us</a>
         <a href="#about">About Us</a>
     </nav>
@@ -105,44 +23,98 @@
     <div id="voting" class="content">
         <h2>Vote for Your Favorite Zambian Gospel Song</h2>
         <div class="song-list">
-            <div class="song">
+            <div class="song" id="lesa_wilala">
                 <span><strong>Lesa Wilala</strong> - Pompi</span>
+                <div class="progress-bar"><div class="progress"></div></div>
+                <div class="vote-count">Votes: <span id="count_lesa_wilala">0</span></div>
                 <button onclick="vote('lesa_wilala')">Vote</button>
             </div>
-            <div class="song">
+            <div class="song" id="mfumu_kale">
                 <span><strong>Mfumu Kale</strong> - Esther Chungu</span>
+                <div class="progress-bar"><div class="progress"></div></div>
+                <div class="vote-count">Votes: <span id="count_mfumu_kale">0</span></div>
                 <button onclick="vote('mfumu_kale')">Vote</button>
             </div>
-            <div class="song">
+            <div class="song" id="amano">
                 <span><strong>Amano</strong> - Abel Chungu</span>
+                <div class="progress-bar"><div class="progress"></div></div>
+                <div class="vote-count">Votes: <span id="count_amano">0</span></div>
                 <button onclick="vote('amano')">Vote</button>
             </div>
-            <div class="song">
+            <div class="song" id="kale">
                 <span><strong>Kale</strong> - Mag44</span>
+                <div class="progress-bar"><div class="progress"></div></div>
+                <div class="vote-count">Votes: <span id="count_kale">0</span></div>
                 <button onclick="vote('kale')">Vote</button>
             </div>
         </div>
-        <p id="vote-result">Loading votes...</p>
     </div>
     
     <footer>
         &copy; 2025 Potent Praise. All rights reserved.
     </footer>
 
+    <!-- Firebase SDK Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
     <script>
-        let votes = JSON.parse(localStorage.getItem("votes")) || { lesa_wilala: 0, mfumu_kale: 0, amano: 0, kale: 0 };
+        // Import necessary Firebase modules
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, set, get, child, onValue, update } from "firebase/database";
 
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDG6wbBjag0d2BBDub4hlqOs6wdARUueB8",
+            authDomain: "potent-praise.firebaseapp.com",
+            databaseURL: "https://potent-praise-default-rtdb.firebaseio.com",
+            projectId: "potent-praise",
+            storageBucket: "potent-praise.firebasestorage.app",
+            messagingSenderId: "800033536164",
+            appId: "1:800033536164:web:a91cc0711ec83abd928e31",
+            measurementId: "G-3CPJ3GFX2Q"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Update vote count in Firebase
         function vote(song) {
-            votes[song]++;
-            localStorage.setItem("votes", JSON.stringify(votes));
-            updateVoteCount();
+            const songRef = ref(database, 'votes/' + song);
+            get(songRef).then((snapshot) => {
+                let currentVotes = snapshot.exists() ? snapshot.val() : 0;
+                set(songRef, currentVotes + 1);
+            });
         }
 
+        // Update vote count in the progress bar and count
         function updateVoteCount() {
-            document.getElementById("vote-result").innerText = `Lesa Wilala: ${votes.lesa_wilala} | Mfumu Kale: ${votes.mfumu_kale} | Amano: ${votes.amano} | Kale: ${votes.kale}`;
+            const votesRef = ref(database, 'votes');
+            onValue(votesRef, (snapshot) => {
+                const votes = snapshot.val();
+                let totalVotes = 0;
+
+                // Calculate total votes
+                for (let song in votes) {
+                    totalVotes += votes[song];
+                }
+
+                // Update progress bar and count for each song
+                for (let song in votes) {
+                    let progressElement = document.querySelector(`#${song} .progress`);
+                    if (progressElement) {
+                        let percentage = (votes[song] / totalVotes) * 100;
+                        progressElement.style.width = `${percentage}%`;
+                    }
+                    document.getElementById(`count_${song}`).innerText = votes[song];
+                }
+            });
         }
 
-        window.onload = updateVoteCount;
+        // Call updateVoteCount on page load
+        updateVoteCount();
     </script>
 </body>
 </html>
+
